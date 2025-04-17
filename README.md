@@ -79,7 +79,7 @@ You can add the following features to improve the scheduling logic:
    - Modify the existing automation to include a condition for rain.
 
 #### **Example Automation with Rain Check**
-```yaml
+
 automation:
   - alias: Dynamic Hourly Irrigation Adjustment with Rain Check
     trigger:
