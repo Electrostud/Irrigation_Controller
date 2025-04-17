@@ -1,0 +1,19 @@
+##
+code logic or python
+Here is the complete code to populate each required file for a functional Home Assistant integration. Follow these steps carefully to ensure the setup is correct and error-free.
+
+---
+
+### **Step 1: File Structure**
+Create the following directory and file structure:
+
+```plaintext
+custom_components/
+  irrigation_controller/
+    __init__.py
+    manifest.json
+    sensor.py
+    automation.yaml
+    services.yaml
+    translations/
+      en.json

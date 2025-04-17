@@ -1,0 +1,10 @@
+{
+    "domain": "irrigation_controller",
+    "name": "Irrigation Controller",
+    "version": "1.0.0",
+    "documentation": "https://github.com/yourusername/irrigation_controller",
+    "dependencies": [],
+    "codeowners": ["@Electrostud"],
+    "requirements": [],
+    "iot_class": "cloud_polling"
+  }
