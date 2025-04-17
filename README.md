@@ -53,3 +53,14 @@ views:
             name: Humidity
           - entity: switch.linktap_valve
             name: Irrigation Valve
+
+FAQ
+What is Evapotranspiration (ET)?
+
+Evapotranspiration (ET) is the loss of water from the soil through evaporation and plant transpiration. It determines how much water your plants need.
+Can I override the automation?
+
+Yes, you can manually start/stop irrigation using the Lovelace dashboard.
+How do I adjust irrigation settings?
+
+Edit the crop coefficient, area, and flow rate in the Home Assistant settings.
