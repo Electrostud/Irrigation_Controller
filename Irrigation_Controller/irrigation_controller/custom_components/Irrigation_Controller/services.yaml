@@ -1,6 +1,0 @@
-turn_on:
-  description: "Start irrigation for a specific duration."
-  fields:
-    duration:
-      description: "Duration in minutes."
-      example: 30
