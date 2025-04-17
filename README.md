@@ -3,14 +3,15 @@
 ![Irrigation Controller](https://img.shields.io/github/v/release/Electrostud/Irrigation_Controller)
 ![HACS Compatible](https://img.shields.io/badge/HACS-Compatible-green)
 
-A smart irrigation controller for Home Assistant that dynamically adjusts watering schedules based on real-time weather data from OpenWeatherMap and integrates with LinkTap devices.
+A Home Assistant integration to dynamically control irrigation schedules based on real-time weather data from OpenWeatherMap and integrate with LinkTap irrigation devices.
 
 ## Features
-- **Dynamic Watering**: Automatically calculates irrigation duration based on evapotranspiration (ET), temperature, humidity, and wind speed.
-- **Real-Time Weather Data**: Fetches data from OpenWeatherMap to optimize watering.
-- **LinkTap Integration**: Works seamlessly with LinkTap irrigation valves.
-- **Customizable Settings**: Adjust area, crop coefficient, and flow rate to suit your needs.
-- **Dashboard**: Monitor schedules, sensor data, and control irrigation directly from Home Assistant.
+- **Dynamic Watering**: Automatically calculates irrigation duration using evapotranspiration (ET).
+- **Weather Integration**: Uses OpenWeatherMap for temperature, humidity, and wind data.
+- **LinkTap Integration**: Works seamlessly with LinkTap irrigation devices.
+- **Dashboard**: Monitor and control irrigation schedules with a custom Home Assistant dashboard.
+- **Rain Skip Logic**: Skips watering when rain is expected.
+- **Weekly Schedules**: Set and view weekly schedules for irrigation.
 
 ## Installation
 
@@ -19,11 +20,11 @@ A smart irrigation controller for Home Assistant that dynamically adjusts wateri
 2. Click the 3-dot menu in the top-right corner and select **Custom Repositories**.
 3. Add this repository URL: `https://github.com/Electrostud/Irrigation_Controller`.
 4. Select **Integration** as the category and click **Add**.
-5. Search for "Irrigation Controller" in HACS and install it.
+5. Search for "Irrigation Controller" in HACS, install it, and restart Home Assistant.
 
 ### Manual Installation
 1. Clone this repository or download the ZIP file.
-2. Copy the `custom_components/irrigation_controller` folder to your Home Assistant `custom_components` directory.
+2. Copy the `custom_components/irrigation_controller` folder to your Home Assistant `config/custom_components` directory.
 3. Restart Home Assistant.
 
 ## Configuration
@@ -33,7 +34,7 @@ A smart irrigation controller for Home Assistant that dynamically adjusts wateri
 4. Configure your LinkTap account if using LinkTap.
 
 ## Lovelace Dashboard
-Add the following to your Lovelace dashboard to monitor and control irrigation:
+To monitor and control irrigation, add the following to your Lovelace dashboard:
 
 ```yaml
 views:
@@ -51,16 +52,49 @@ views:
             name: Temperature
           - entity: sensor.openweathermap_humidity
             name: Humidity
+          - entity: sensor.openweathermap_wind_speed
+            name: Wind Speed
           - entity: switch.linktap_valve
             name: Irrigation Valve
 
-FAQ
-What is Evapotranspiration (ET)?
 
-Evapotranspiration (ET) is the loss of water from the soil through evaporation and plant transpiration. It determines how much water your plants need.
-Can I override the automation?
+---
 
-Yes, you can manually start/stop irrigation using the Lovelace dashboard.
-How do I adjust irrigation settings?
+### **2. Create a Dashboard for Irrigation Schedules and Controls**
+#### **Steps to Create the Dashboard**
+1. Go to **Settings** > **Dashboards** in Home Assistant.
+2. Add a new dashboard named `Irrigation Control`.
+3. Use the provided Lovelace YAML code from the `README.md` file to configure the dashboard.
 
-Edit the crop coefficient, area, and flow rate in the Home Assistant settings.
+---
+
+### **3. Enhance Scheduling Logic**
+You can add the following features to improve the scheduling logic:
+1. **Weekly Schedule**:
+   - Create a `schedule.yaml` file to define irrigation times/days.
+   - Use the `input_datetime` and `input_select` entities in Home Assistant to allow users to configure schedules via the UI.
+
+2. **Rain Skip Logic**:
+   - Use OpenWeatherMap’s precipitation forecast to skip watering if rain is expected in the next 24 hours.
+   - Modify the existing automation to include a condition for rain.
+
+#### **Example Automation with Rain Check**
+```yaml
+automation:
+  - alias: Dynamic Hourly Irrigation Adjustment with Rain Check
+    trigger:
+      - platform: time_pattern
+        hours: "/1"
+    condition:
+      - condition: numeric_state
+        entity_id: sensor.evapotranspiration_et
+        above: 0.1
+      - condition: numeric_state
+        entity_id: sensor.openweathermap_rain_forecast
+        below: 1  # Skip irrigation if rain > 1mm is forecasted
+    action:
+      - service: switch.turn_on
+        target:
+          entity_id: switch.linktap_valve
+        data:
+          duration: "{{ states('sensor.irrigation_duration') | int }}"
